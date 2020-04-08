@@ -3,7 +3,7 @@
 # Xbuilder library source file
 # This library is for including by other bash scripts
 
-# Copyright (C) 2019 Grzegorz Kociołek (Dark565)
+# Copyright (C) 2020 Grzegorz Kociołek (Dark565)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ function __xbuilder__compile_receiver() {
 	local TH_NUM=1
 	local DIVIDER=$((XBUILDER_THREADS))
 
-	printf -- "-- Compilation with '${__XBUILDER_COMPILER}' -- Started at: "; date
+	printf -- "-- Compilation with '${__XBUILDER_COMPILER}' -- Started at: %(%c)T" -1
 	echo
 
 	COUNT=1
@@ -91,9 +91,7 @@ function __xbuilder__compile_receiver() {
 		CMP_THREAD_ID=${CMP_THREAD_ID%%\|*}
 
 		if [[ ${STAT} == '3' ]]; then
-			unset THR_NOW[CMP_THREAD_ID]
-			unset THR_BEG[CMP_THREAD_ID]
-			unset THR_TIMESTAMP[CMP_THREAD_ID]
+			unset THR_{NOW,BEG,TIMESTAMP}[CMP_THREAD_ID]
 		else
 
 			THR_TNOW[CMP_THREAD_ID]=${EPOCHREALTIME/.}
@@ -508,7 +506,7 @@ function xbuilder__link_dir() {
 }
 
 # Cd to the project root repository (directory having at least .git).
-# XBUILDER_SHOULDHAVE - List of elements Aqua root directory must have
+# XBUILDER_MUSTHAVE - List of elements the root directory must have
 function xbuilder__cd_to_gitroot() {
 	local CPWD
 	local elem
@@ -516,7 +514,7 @@ function xbuilder__cd_to_gitroot() {
 
 	CPWD="$PWD"
 	while true; do
-		for elem in ".git" "${XBUILDER_SHOULDHAVE[@]}"; do
+		for elem in ".git" "${XBUILDER_MUSTHAVE[@]}"; do
 			if ! [[ -e "$elem" ]]; then
 				if [[ $PWD == '/' ]] || ! cd ..; then
 					cd "$CPWD"
@@ -656,7 +654,7 @@ Variables:
 - xbuilder__cd_to_gitroot();
 Turn back in the directory tree until at least '.git' will be in a directory
 Variables:
- XBUILDER_SHOULDHAVE - List of elements, that project root directory must have
+ XBUILDER_MUSTHAVE - List of elements that the root directory must have
 
 
 xbuilder defines also these control functions:
